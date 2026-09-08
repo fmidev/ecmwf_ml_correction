@@ -18,7 +18,7 @@ def read_file_from_s3(grib_file):
     return fsspec.open_local(
         uri,
         mode="rb",
-        s3={"anon": True, "client_kwargs": {"endpoint_url": "https://eris.fmi.fi"}},
+        s3={"anon": True, "client_kwargs": {"endpoint_url": os.environ.get("S3_HOST", "https://eris.fmi.fi")}},
     )
 
 
