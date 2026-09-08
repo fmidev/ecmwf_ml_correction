@@ -21,13 +21,13 @@ ARG station_TAG=2026
 
 ARG S3_HOST=https://lake.fmi.fi
 
-ADD $S3_HOST/ml-models/ecmwf-ml-correction/ec_mos_lsm.grib /meps_ml_correction
-ADD $S3_HOST/ml-models/ecmwf-ml-correction/ec_mos_topography.grib /meps_ml_correction
+ADD $S3_HOST/ml-models/ecmwf-ml-correction/ec_mos_lsm.grib /ecmwf_ml_correction
+ADD $S3_HOST/ml-models/ecmwf-ml-correction/ec_mos_topography.grib /ecmwf_ml_correction
 ADD $S3_HOST/ml-models/ecmwf-ml-correction/stations_nearest_$station_TAG.csv /ecmwf_ml_correction/all_stations.csv
-ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_T2_$TA_TAG.json /meps_ml_correction/XGB_T2.json
-ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TD_$TD_TAG.json /meps_ml_correction/XGB_TD.json
-ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TMAX_$TMAX_TAG.json /meps_ml_correction/XGB_TMAX.json
-ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TMIN_$TMIN_TAG.json /meps_ml_correction/XGB_TMIN.json
+ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_T2_$TA_TAG.json /ecmwf_ml_correction/XGB_T2.json
+ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TD_$TD_TAG.json /ecmwf_ml_correction/XGB_TD.json
+ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TMAX_$TMAX_TAG.json /ecmwf_ml_correction/XGB_TMAX.json
+ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TMIN_$TMIN_TAG.json /ecmwf_ml_correction/XGB_TMIN.json
 
 RUN chmod 644 ec_mos_lsm.grib && \
     chmod 644 ec_mos_topography.grib && \
