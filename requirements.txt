@@ -1,0 +1,7 @@
+argparse==1.1
+eccodes==2.48.0
+fsspec==2026.7.0
+gridpp==0.7.1
+numpy==1.26.4
+pandas==3.0.5
+xgboost==3.2.0
