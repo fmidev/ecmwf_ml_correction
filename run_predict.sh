@@ -44,4 +44,4 @@ T925=$bucket"T-K_925.grib"
 T_ENSMEAN=$bucket"T-MEAN-K_0.grib"
 
 #Generating ml corrected forecast for parameter
-$PYTHON xgb_predict.py --topography_data $TOPO --landseacover_data $LC --p_data $P0 --t2_data $T2 --td2_data $TD2 --u10_data $U10 --v10_data $V10 --lcc_data $LCC --mcc_data $MCC --t850_data $T850 --skt_data $SKT --tmax_data $TMAX --tmin_data $TMIN --t925_data $T925 --t_ensmean_data $T_ENSMEAN --model_ta $MODEL_TA --model_tmax $MODEL_TMAX --model_tmin $MODEL_TMIN --stations_list $STATIONS_FILE --analysis_time $ANALYSIS_TIME --producer_id $PRODUCER_ID --output $OUTPUT_FILE --parameter $PARAMETER
+$PYTHON xgb_predict.py --topography_data $TOPO --landseacover_data $LC --p_data $P0 --t2_data $T2 --td2_data $TD2 --u10_data $U10 --v10_data $V10 --lcc_data $LCC --mcc_data $MCC --t850_data $T850 --skt_data $SKT --tmax_data $TMAX --tmin_data $TMIN --t925_data $T925 --t_ensmean_data $T_ENSMEAN --model_ta $MODEL_TA --model_td $MODEL_TD --model_tmax $MODEL_TMAX --model_tmin $MODEL_TMIN --stations_list $STATIONS_FILE --analysis_time $ANALYSIS_TIME --producer_id $PRODUCER_ID --output $OUTPUT_FILE --parameter $PARAMETER
