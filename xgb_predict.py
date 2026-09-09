@@ -67,7 +67,7 @@ def main():
     grid, lons, lats, background, leadtimes, analysistime, forecasttime, lc, topo = read_grid(args, args.parameter)
     background0 = copy.copy(background)
     background0[background0 != 0] = 0
-    points = get_points(args)
+    points = get_points(grid, lc, args)
     diff = interpolate(grid, points, background0[0], ml_predictions, args, lc)
     output, forecasttime = ml_corrected_forecasts(forecasttime, background, diff, args.parameter)
     print("Interpolating forecasts takes:", round(time.time()-oit, 1), "seconds")

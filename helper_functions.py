@@ -344,15 +344,22 @@ def ml_predict(args, all_features, features_list, variable):
     return ml_results
 
 
-def get_points(args):
+def get_points(grid, lc, args):
     '''Create point variable for gridpp interpolation'''
     all_stations = pd.read_csv(args.stations_list)
+
+    points1 = gridpp.Points(
+        all_stations['lat'].to_numpy(),
+        all_stations['lon'].to_numpy(),
+    )
+
+    all_stations['lsm'] = gridpp.nearest(grid, points1, lc)
     
     points = gridpp.Points(
         all_stations['lat'].to_numpy(),
         all_stations['lon'].to_numpy(),
         all_stations['elev'].to_numpy(),
-        #all_stations['lsm'].to_numpy(),
+        all_stations['lsm'].to_numpy(),
     )
 
     return points
