@@ -113,9 +113,7 @@ def read_grid(args, variable):
     elif variable == "dewpoint":
         lons, lats, vals, leadtime, analysistime, forecasttime = read_grib(args.td2_data, True)
     elif variable == "t_max":
-        lons, lats, vals_1h, leadtime_1h, analysistime, forecasttime_1h = read_grib(args.tmax_data, True)
-        _, _, vals_3h, leadtime_3h, _, forecasttime_3h = read_grib(args.tmax3h_data, False)
-
+        lons, lats, vals, leadtime, analysistime, forecasttime = read_grib(args.tmax_data, True)
     elif variable == "t_min":
         lons, lats, vals, leadtime, analysistime, forecasttime = read_grib(args.tmin_data, True)
 
@@ -140,8 +138,8 @@ def interpolate_to_point(field, i, j, wx, wy):
     )
 
 def create_features_data(args):
-    '''Create features array which has dimensions for times, stations, variables.
-    In addition create metadata that contains (valid)time and leadtime.''' 
+    '''Create features array including also lagged features, time features 
+    and stations features. Return features array and features list.''' 
     #Station list 
     stations = pd.read_csv(args.stations_list)
 
@@ -225,7 +223,6 @@ def get_point_forecasts(variable, all_features, features_list):
 
 def xgb_prediction(all_features, forecasts_point, args, variable):
     '''Make xgb prediction for given variable'''
-        
     #Load xgb model
     xgb_model = xgb.XGBRegressor()
     if (variable == "temperature"): xgb_model.load_model(args.model_ta)
@@ -481,18 +478,18 @@ def interpolate(grid, points, background, obs, args, lc):
 
 
 def ml_corrected_forecasts(forecasttime, background, diff, variable):
-    '''calculate the final ml corrected forecast fields: MEPS - ml_correction
+    '''Calculate the final ml corrected forecast fields: ECMWF - ml_correction
     and make rough qc to forecasts'''
-    # Remove leadtimes 0, because due to lagged features, correction is not made to those
+    # Remove leadtime 0, because due to lagged features, correction is not made to that leadtime
     n_lags = len(forecasttime) - len(diff)
     output = []
     for j in range(0, len(diff)):
         tmp_output = background[j + n_lags] - diff[j]
         # Implement simple QC thresholds
         if variable == "temperature":
-            tmp_output = np.clip(tmp_output, 218, 328)
+            tmp_output = np.clip(tmp_output, 205, 328)
         elif variable == "dewpoint":
-            tmp_output = np.clip(tmp_output, 208, 323)
+            tmp_output = np.clip(tmp_output, 200, 310)
         output.append(tmp_output)
 
     forecasttime = forecasttime[n_lags:]
