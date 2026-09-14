@@ -506,7 +506,7 @@ def ml_corrected_forecasts(forecasttime, background, diff, variable):
 
 
 def write_grib_message(fp, args, analysistime, forecasttime, data):
-    pdtn = 70
+    pdtn = 0
     tosp = None
     if args.parameter == "temperature":
         pnum = 0
@@ -517,19 +517,18 @@ def write_grib_message(fp, args, analysistime, forecasttime, data):
         pcat = 0
         levelvalue = 2
     elif args.parameter == "t_max": #??
-        pdtn = 11
+        pdtn = 8
         pnum = 0
         pcat = 0
         levelvalue = 2
         tosp = 2
     elif args.parameter == "t_min": #??
-        pdtn = 11
+        pdtn = 8
         pnum = 0 
         pcat = 0
         levelvalue = 2
-        tosp = 2
+        tosp = 3
     # Store different time steps as grib msgs
-    forecastTime_prev = 0
     for j in range(0, len(data)):
         tdata = data[j]
         forecastTime = int((forecasttime[j] - analysistime).total_seconds() / 3600)
@@ -537,15 +536,13 @@ def write_grib_message(fp, args, analysistime, forecasttime, data):
         # - For non-aggregated parameters, grib2 key 'forecastTime' is the time of the forecast
         # - For aggregated parameters, it is the start time of the aggregation period. The end of the period is defined by 'lengthOfTimeRange'
         #   ECMWF have different time steps for different lead times: 1-90 (1h time interval), 93-144 (3h time interval), 150-240 (6h time interval),
-        #   so save previous forecastTime end of this loop iteration
-        iouot = forecastTime - forecastTime_prev
 
-        if tosp == 2:
-            forecastTime = forecastTime_prev
+        if tosp in (2,3):
+            forecastTime -= 12
         
         h = ecc.codes_grib_new_from_samples("regular_ll_sfc_grib2")
         ecc.codes_set(h, "tablesVersion", 28)
-        ecc.codes_set(h, "shapeOfTheEarth", 0)
+        ecc.codes_set(h, "shapeOfTheEarth", 6) # Earth assumed spherical with radius of 6 371 229.0 m
         ecc.codes_set(h, "Ni", tdata.shape[1])
         ecc.codes_set(h, "Nj", tdata.shape[0])
         ecc.codes_set(h, "latitudeOfFirstGridPointInDegrees", 73.5)
@@ -563,17 +560,22 @@ def write_grib_message(fp, args, analysistime, forecasttime, data):
         ecc.codes_set(h, "parameterCategory", pcat)
         ecc.codes_set(h, "parameterNumber", pnum)
         ecc.codes_set(h, "productDefinitionTemplateNumber", pdtn)
-        ##Some if else for tmin and tmax parameter
-        
+
+        if tosp in (2,3):
+            ecc.codes_set(h, "typeOfStatisticalProcessing", tosp)
+            ecc.codes_set(h, "indicatorOfUnitForTimeRange", 1)  # hours
+            ecc.codes_set(h, "lengthOfTimeRange", 12) # 12 hours
+
         ecc.codes_set(h, "typeOfFirstFixedSurface", 103)
         ecc.codes_set(h, "level", levelvalue) 
         ecc.codes_set(h, "packingType", "grid_ccsds")
-        ecc.codes_set(h, "indicatorOfUnitOfTimeRange", iouot)  # hours
-        ecc.codes_set(h, "typeOfGeneratingProcess", 2)  # deterministic forecast
+        ecc.codes_set(h, "indicatorOfUnitForForecastTime", 1)
+        ecc.codes_set(h, "indicatorOfUnitOfTimeRange", 1)  # hours
+        ecc.codes_set(h, "typeOfGeneratingProcess", 3)  # Bias-corrected forecast
         ecc.codes_set(h, "typeOfProcessedData", 2)  # analysis and forecast products
         ecc.codes_set_values(h, tdata.flatten())
         ecc.codes_write(h, fp)
-        forecastTime_prev = forecastTime
+
     ecc.codes_release(h)
              
 
