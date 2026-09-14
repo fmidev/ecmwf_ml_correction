@@ -60,12 +60,12 @@ def main():
     #Gridding
     oit = time.time()
     grid, lons, lats, background_t2, leadtimes, analysistime, forecasttime, lc, topo = read_grid(args, "temperature")
-    _, _, _, background_td2, _, _, _, _, _ = read_grid(args, "dewpoint")
     background0 = copy.copy(background_t2)
     background0[background0 != 0] = 0
     points = get_points(grid, lc, args)
     diff_t2 = interpolate(grid, points, background0[0], ml_predictions_t2, args, lc)
-    output_t2, forecasttime = ml_corrected_forecasts(forecasttime, background_t2, diff_t2, "temperature")
+    output_t2, forecasttime_out = ml_corrected_forecasts(forecasttime, background_t2, diff_t2, "temperature")
+    grid, lons, lats, background_td2, leadtimes, analysistime, forecasttime, lc, topo = read_grid(args, "dewpoint")
     diff_td2 = interpolate(grid, points, background0[0], ml_predictions_td2, args, lc)
     output_td2, _ = ml_corrected_forecasts(forecasttime, background_td2, diff_td2, "dewpoint")
     #Set that output of dewpoint cant be higher than output of temperature
@@ -75,8 +75,8 @@ def main():
     print("Interpolating forecasts takes:", round(time.time()-oit, 1), "seconds")
 
     #Write corrected forecasts to grib files
-    write_grib(args, analysistime, forecasttime, output_t2, args.output_file_t2, "temperature")
-    write_grib(args, analysistime, forecasttime, output_td2, args.output_file_td2, "dewpoint")
+    write_grib(args, analysistime, forecasttime_out, output_t2, args.output_file_t2, "temperature")
+    write_grib(args, analysistime, forecasttime_out, output_td2, args.output_file_td2, "dewpoint")
 
 if __name__ == "__main__":
     main()

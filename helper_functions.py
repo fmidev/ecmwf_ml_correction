@@ -488,6 +488,7 @@ def ml_corrected_forecasts(forecasttime, background, diff, variable):
     '''Calculate the final ml corrected forecast fields: ECMWF - ml_correction
     and make rough qc to forecasts'''
     # Remove leadtime 0, because due to lagged features, correction is not made to that leadtime
+    assert background.shape[0] == len(forecasttime), "Background and forecasttime length mismatch"
     n_lags = len(forecasttime) - len(diff)
     output = []
     for j in range(0, len(diff)):
