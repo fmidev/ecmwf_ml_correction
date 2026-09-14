@@ -505,24 +505,24 @@ def ml_corrected_forecasts(forecasttime, background, diff, variable):
     return output, forecasttime
 
 
-def write_grib_message(fp, args, analysistime, forecasttime, data):
+def write_grib_message(fp, args, analysistime, forecasttime, data, variable):
     pdtn = 0
     tosp = None
-    if args.parameter == "temperature":
+    if variable == "temperature":
         pnum = 0
         pcat = 0
         levelvalue = 2
-    elif args.parameter == "dewpoint":
+    elif variable == "dewpoint":
         pnum = 6
         pcat = 0
         levelvalue = 2
-    elif args.parameter == "t_max": #??
+    elif variable == "t_max": #??
         pdtn = 8
         pnum = 0
         pcat = 0
         levelvalue = 2
         tosp = 2
-    elif args.parameter == "t_min": #??
+    elif variable == "t_min": #??
         pdtn = 8
         pnum = 0 
         pcat = 0
@@ -579,10 +579,10 @@ def write_grib_message(fp, args, analysistime, forecasttime, data):
     ecc.codes_release(h)
              
 
-def write_grib(args, analysistime, forecasttime, data):
-    if args.output.startswith("s3://"):
+def write_grib(args, analysistime, forecasttime, data, outfile, variable):
+    if outfile.startswith("s3://"):
         openfile = fsspec.open(
-            "simplecache::{}".format(args.output),
+            "simplecache::{}".format(outfile),
             "wb",
             s3={
                 "anon": False,
@@ -592,12 +592,12 @@ def write_grib(args, analysistime, forecasttime, data):
             },
         )
         with openfile as fpout:
-            write_grib_message(fpout, args, analysistime, forecasttime, data)
+            write_grib_message(fpout, args, analysistime, forecasttime, data, variable)
     else:
-        with open(args.output, "wb") as fpout:
-            write_grib_message(fpout, args, analysistime, forecasttime, data)
+        with open(outfile, "wb") as fpout:
+            write_grib_message(fpout, args, analysistime, forecasttime, data, variable)
             
-    print(f"Wrote file {args.output}")
+    print(f"Wrote file {outfile}")
 
 
 

@@ -13,7 +13,6 @@ from helper_functions import ml_corrected_forecasts
 
 def parse_command_line():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--parameter", action="store", type=str, required=True)
     parser.add_argument("--topography_data", action="store", type=str, required=True)
     parser.add_argument("--landseacover_data", action="store", type=str, required=True)
     parser.add_argument("--p_data", action="store", type=str, required=True)
@@ -35,17 +34,12 @@ def parse_command_line():
     parser.add_argument("--stations_list", action="store", type=str, required=True)
     parser.add_argument("--analysis_time", action="store", type=str, required=True)
     parser.add_argument("--producer_id", action="store", type=int, required=True)
-    parser.add_argument("--output", action="store", type=str, required=True)
+    parser.add_argument("--output_file_t2", action="store", type=str, required=True)
+    parser.add_argument("--output_file_td2", action="store", type=str, required=True)
     parser.add_argument("--plot", action="store_true", default=False)
     parser.add_argument("--disable_multiprocessing", action="store_true", default=False)
     
-    args = parser.parse_args()
-    
-    allowed_params = ["dewpoint","temperature"]
-    if args.parameter not in allowed_params:
-        print("Error: parameter must be one of: {}".format(allowed_params))
-        sys.exit(1)
-        
+    args = parser.parse_args()       
     return args
 
                                                                                                     
@@ -55,25 +49,34 @@ def main():
     #Read NWP data and create fetures array
     st = time.time()
     all_features, features_list = create_features_data(args)
-    print("Reading NWP data for", args.parameter, "takes:", round(time.time()-st, 1), "seconds")
+    print("Reading NWP data for ML features takes:", round(time.time()-st, 1), "seconds")
 
-    #ML prediction
+    #ML prediction for temperature and dewpoint
     mlt = time.time()
-    ml_predictions = ml_predict(args, all_features, features_list, args.parameter)
-    print("Producing ML forecasts takes:", round(time.time()-mlt, 1), "seconds")
+    ml_predictions_t2 = ml_predict(args, all_features, features_list, "temperature")
+    ml_predictions_td2 = ml_predict(args, all_features, features_list, "dewpoint")
+    print("Producing ML forecasts for temperature and dewpoint takes:", round(time.time()-mlt, 1), "seconds")
 
     #Gridding
     oit = time.time()
-    grid, lons, lats, background, leadtimes, analysistime, forecasttime, lc, topo = read_grid(args, args.parameter)
-    background0 = copy.copy(background)
+    grid, lons, lats, background_t2, leadtimes, analysistime, forecasttime, lc, topo = read_grid(args, "temperature")
+    _, _, _, background_td2, _, _, _, _, _ = read_grid(args, "dewpoint")
+    background0 = copy.copy(background_t2)
     background0[background0 != 0] = 0
     points = get_points(grid, lc, args)
-    diff = interpolate(grid, points, background0[0], ml_predictions, args, lc)
-    output, forecasttime = ml_corrected_forecasts(forecasttime, background, diff, args.parameter)
+    diff_t2 = interpolate(grid, points, background0[0], ml_predictions_t2, args, lc)
+    output_t2, forecasttime = ml_corrected_forecasts(forecasttime, background_t2, diff_t2, "temperature")
+    diff_td2 = interpolate(grid, points, background0[0], ml_predictions_td2, args, lc)
+    output_td2, _ = ml_corrected_forecasts(forecasttime, background_td2, diff_td2, "dewpoint")
+    #Set that output of dewpoint cant be higher than output of temperature
+    for i in range(0, len(output_td2)):
+        td_gt_t2 = output_td2[i] > output_t2[i]
+        output_td2[i][td_gt_t2] = output_t2[i][td_gt_t2] - 0.0001
     print("Interpolating forecasts takes:", round(time.time()-oit, 1), "seconds")
 
-    #Write corrected forecasts to grib file
-    write_grib(args, analysistime, forecasttime, output)
+    #Write corrected forecasts to grib files
+    write_grib(args, analysistime, forecasttime, output_t2, args.output_file_t2, "temperature")
+    write_grib(args, analysistime, forecasttime, output_td2, args.output_file_td2, "dewpoint")
 
 if __name__ == "__main__":
     main()

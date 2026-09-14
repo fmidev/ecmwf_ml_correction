@@ -1,18 +1,17 @@
 #!/bin/bash
-# Run predict script for the ecmwf ml correction forecast 
-#source ../../bin/activate
-#E.g. ./run_predict.sh 2026090700 "temperature" "path/to/file.grib2" 122 > log/log_run_xgb_predict 
+# Run predict script for the ecmwf ml correction forecasts: tempeature and dewpoint 
+#E.g. ./run_predict.sh 2026090700 "path/to/temperature_file.grib2" "path/to/dewpoint_file.grib2" 122
 
 PYTHON=python3
 ANALYSIS_TIME=$1 #YYYYMMDDHH
-PARAMETER=$2 #"temperature", "dewpoint" (needs temperature to be finished yfirst)
-OUTPUT_FILE=$3
+OUTPUT_FILE_T2=$2
+OUTPUT_FILE_TD=$3
 
 PRODUCER_ID=$4 #122 for preop, 120 for oper
 
 echo "ANALYSIS_TIME:" $ANALYSIS_TIME
-echo "PARAMETER:" $PARAMETER
-echo "OUTPUT_FILE:" $OUTPUT_FILE
+echo "OUTPUT_FILE_T2:" $OUTPUT_FILE_T2
+echo "OUTPUT_FILE_TD:" $OUTPUT_FILE_TD
 
 # Local (static) data (fetched from S3 when run in openshift)
 TOPO="ec_mos_topography.grib"
@@ -43,5 +42,5 @@ TMIN=$bucket"TMIN-K_0.grib"
 T925=$bucket"T-K_925.grib"
 T_ENSMEAN=$bucket"T-MEAN-K_0.grib"
 
-#Generating ml corrected forecast for parameter
-$PYTHON xgb_predict.py --topography_data $TOPO --landseacover_data $LC --p_data $P0 --t2_data $T2 --td2_data $TD2 --u10_data $U10 --v10_data $V10 --lcc_data $LCC --mcc_data $MCC --skt_data $SKT --tmax_data $TMAX --tmin_data $TMIN --t925_data $T925 --t_ensmean_data $T_ENSMEAN --model_ta $MODEL_TA --model_td $MODEL_TD --model_tmax $MODEL_TMAX --model_tmin $MODEL_TMIN --stations_list $STATIONS_FILE --analysis_time $ANALYSIS_TIME --producer_id $PRODUCER_ID --output $OUTPUT_FILE --parameter $PARAMETER
+#Generating ml corrected forecasts for both temperature and dewpoint at the same time
+$PYTHON xgb_predict.py --topography_data $TOPO --landseacover_data $LC --p_data $P0 --t2_data $T2 --td2_data $TD2 --u10_data $U10 --v10_data $V10 --lcc_data $LCC --mcc_data $MCC --skt_data $SKT --tmax_data $TMAX --tmin_data $TMIN --t925_data $T925 --t_ensmean_data $T_ENSMEAN --model_ta $MODEL_TA --model_td $MODEL_TD --model_tmax $MODEL_TMAX --model_tmin $MODEL_TMIN --stations_list $STATIONS_FILE --analysis_time $ANALYSIS_TIME --producer_id $PRODUCER_ID --output_file_t2 $OUTPUT_FILE_T2 --output_file_td2 $OUTPUT_FILE_TD

@@ -11,11 +11,11 @@ Predction code also checks that:
 ## Usage
 Running with run_predict.sh shell script:
 ```
-./run_predict.sh YYYYMMDDHH parameter outfile.grib2 producer_id 
+./run_predict.sh YYYYMMDDHH outfile_temperature.grib2 outfile_dewpoint.grib2 producer_id 
 ```
 E.g. 
 ```
-./run_predict.sh 2026090800 "temperature" "temperature_2026090800.grib2" 122
+./run_predict.sh 2026091400 "temperature_2026091400.grib2" "dewpoint_2026091400.grib2" 122
 ```
 
 ## Authors
