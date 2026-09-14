@@ -29,6 +29,8 @@ ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TD_$TD_TAG.json /ecmwf_ml_correct
 ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TMAX_$TMAX_TAG.json /ecmwf_ml_correction/XGB_TMAX.json
 ADD $S3_HOST/ml-models/ecmwf-ml-correction/XGB_TMIN_$TMIN_TAG.json /ecmwf_ml_correction/XGB_TMIN.json
 
+WORKDIR /ecmwf_ml_correction
+
 RUN chmod 644 ec_mos_lsm.grib && \
     chmod 644 ec_mos_topography.grib && \
     chmod 644 all_stations.csv && \
