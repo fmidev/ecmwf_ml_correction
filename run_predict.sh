@@ -29,18 +29,18 @@ else
     bucket="s3://routines-data/ecmwf-ml-correction/preop/"$ANALYSIS_TIME"00/"
 fi
 
-P0=$bucket"P-PA_0.grib"
-T2=$bucket"T-K_0.grib" #ECMWF:llä ground or surface level nolla on lämpötilalle 2m:ssä ja tuulelle 10 m:ssä
-TD2=$bucket"TD-K_0.grib"
-U10=$bucket"U-MS_0.grib"
-V10=$bucket"V-MS_0.grib"
-LCC=$bucket"NL-0TO1_0.grib"
-MCC=$bucket"NM-0TO1_0.grib"
-SKT=$bucket"SKT-K_0.grib"
-TMAX=$bucket"TMAX-K_0.grib"
-TMIN=$bucket"TMIN-K_0.grib"
-T925=$bucket"T-K_925.grib"
-T_ENSMEAN=$bucket"T-MEAN-K_0.grib"
+P0=$bucket"P-PA_0.grib2"
+T2=$bucket"T-K_0.grib2" #ECMWF:llä ground or surface level nolla on lämpötilalle 2m:ssä ja tuulelle 10 m:ssä
+TD2=$bucket"TD-K_0.grib2"
+U10=$bucket"U-MS_0.grib2"
+V10=$bucket"V-MS_0.grib2"
+LCC=$bucket"NL-0TO1_0.grib2"
+MCC=$bucket"NM-0TO1_0.grib2"
+SKT=$bucket"SKT-K_0.grib2"
+TMAX=$bucket"TMAX-K_0.grib2"
+TMIN=$bucket"TMIN-K_0.grib2"
+T925=$bucket"T-K_925.grib2"
+T_ENSMEAN=$bucket"T-MEAN-K_0.grib2"
 
 #Generating ml corrected forecasts for both temperature and dewpoint at the same time
 $PYTHON xgb_predict.py --topography_data $TOPO --landseacover_data $LC --p_data $P0 --t2_data $T2 --td2_data $TD2 --u10_data $U10 --v10_data $V10 --lcc_data $LCC --mcc_data $MCC --skt_data $SKT --tmax_data $TMAX --tmin_data $TMIN --t925_data $T925 --t_ensmean_data $T_ENSMEAN --model_ta $MODEL_TA --model_td $MODEL_TD --model_tmax $MODEL_TMAX --model_tmin $MODEL_TMIN --stations_list $STATIONS_FILE --analysis_time $ANALYSIS_TIME --producer_id $PRODUCER_ID --output_file_t2 $OUTPUT_FILE_T2 --output_file_td2 $OUTPUT_FILE_TD
