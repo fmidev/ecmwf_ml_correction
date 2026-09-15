@@ -8,8 +8,9 @@ RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.
     dnf config-manager --set-enabled powertools && \
     dnf config-manager --setopt="epel.exclude=eccodes*" --save && \
     dnf -y --setopt=install_weak_deps=False install python3.11 python3.11-pip python3.11-setuptools eccodes git && \
-    dnf -y clean all && rm -rf /var/cache/dnf && \
-    git clone -b "$BRANCH" --single-branch https://github.com/fmidev/ecmwf_ml_correction.git
+    dnf -y clean all && rm -rf /var/cache/dnf && 
+
+ADD . /ecmwf_ml_correction
 
 WORKDIR /ecmwf_ml_correction
 
