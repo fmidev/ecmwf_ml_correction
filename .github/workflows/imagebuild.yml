@@ -5,16 +5,7 @@ on: # yamllint disable-line rule:truthy
 name: Create container image
 
 jobs:
-  test-model-file-access:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test model file access
-        run: |
-          curl -v -o /dev/null \
-            "https://lake.fmi.fi/ml-models/ecmwf-ml-correction/ec_mos_lsm.grib"
-
   call-image-build-workflow:
-    needs: test-model-file-access
     uses: fmidev/github-actions-workflows/.github/workflows/imagebuild-workflow.yaml@main
     with:
       image_name: ecmwf_ml_correction
