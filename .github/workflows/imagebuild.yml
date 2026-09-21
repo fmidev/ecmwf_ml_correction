@@ -1,0 +1,15 @@
+on: # yamllint disable-line rule:truthy
+  push:
+    branches: ["main", "preop"]
+
+name: Create container image
+
+jobs:
+  call-image-build-workflow:
+    uses: fmidev/github-actions-workflows/.github/workflows/imagebuild-workflow.yaml@main
+    with:
+      image_name: ecmwf_ml_correction
+      image_test_command: python3 /ecmwf_ml_correction/xgb_predict.py --help
+    secrets:
+      QUAY_USER: ${{ secrets.QUAY_USER }}
+      QUAY_TOKEN: ${{ secrets.QUAY_TOKEN }}
