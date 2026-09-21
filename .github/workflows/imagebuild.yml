@@ -11,7 +11,7 @@ jobs:
       - name: Test model file access
         run: |
           curl -v -o /dev/null \
-            "https://lake.fmi.fi/ml-models/ecmwf-ml-correction/ec_mos_lsm.grib"
+            "https://lake.fmi.fi/ml-models/meps-ml-correction/meps_lsm.grib"
 
   call-image-build-workflow:
     needs: test-model-file-access
